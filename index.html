@@ -17,36 +17,28 @@
 
   <body>
     <div id="map"></div>
+    <div id="loading-container" class="spinner-box">
+        <div class="pulse-container">  
+          <div class="pulse-bubble pulse-bubble-1"></div>
+          <div class="pulse-bubble pulse-bubble-2"></div>
+          <div class="pulse-bubble pulse-bubble-3"></div>
+        </div>
+      </div>
     <div id="overlay">
       <div id="content">
         <div class="tab">
-            <button id="forecast-tab-id" class="tablinks" >Forecast</button>
+            <button id="forecast-tab-id" class="tablinks">Forecast Records</button>
             <button id="historical-tab-id" class="tablinks" >Historical Simulation</button>
             <!-- <button id="dailyaverage-tab-id" class="tablinks" >Daily Averages</button> -->
           </div>
           
           <div id="forecast-tab-content" class="tabcontent">
-             <div id="forecast-loading" class="spinner-box">
-                <div class="pulse-container">  
-                  <div class="pulse-bubble pulse-bubble-1"></div>
-                  <div class="pulse-bubble pulse-bubble-2"></div>
-                  <div class="pulse-bubble pulse-bubble-3"></div>
-                </div>
-              </div>
-              
               <div id="retrieved-forecast-data"></div>
               <div id="stats-forecast-table"></div>
               <button id="download-forecast-btn">Download Data</button>
           </div>
           
           <div id="historical-tab-content" class="tabcontent">
-            <div id="historical-loading" class="spinner-box">
-                <div class="pulse-container">  
-                  <div class="pulse-bubble pulse-bubble-1"></div>
-                  <div class="pulse-bubble pulse-bubble-2"></div>
-                  <div class="pulse-bubble pulse-bubble-3"></div>
-                </div>
-              </div>
               <div id="retrieved-historical-data"></div>
               <div id="stats-historical-table"></div>
               <button id="download-historical-btn">Download Data</button>

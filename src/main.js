@@ -2,6 +2,9 @@ const hydro = new Hydrolang();
 const compute= new hydroCompute();
 
 
+//Loading
+let loading_element = document.getElementById('loading-container')
+
 //Map
 let mapMarker = null;
 let REACHID;
@@ -11,7 +14,6 @@ let isHistoricalLoaded = false;
 let isForecastLoaded = false;
 let isDailyAverageLoaded = false;
 
-let currentStationLocation = {};
 window.clean_stations = [];
 
 
@@ -30,39 +32,17 @@ function openTab(evt, tabName) {
   evt.currentTarget.className += " active";
 
   if (!isHistoricalLoaded){
-      retrieveHistoricalValues(currentStationLocation);
+      retrieveHistoricalValues(REACHID);
   }
 
   if (!isForecastLoaded){
-    retrieveForecastValues(currentStationLocation);
+    retrieveForecastValues(REACHID);
   }
 
   // if (!isDailyAverageLoaded){
   //   retrieveDailyAveragesValues(currentStationLocation);
   // }  
 }
-
-//////////////////////////////////////////////////////////////////////// UPDATE STATUS ICONS FUNCTION
-// function updateStatusIcons(type) {
-//   const statusObj = document.getElementById("request-status");
-
-//   if (type === "identify") {
-//       statusObj.innerHTML = " (Getting Stream ID)";
-//       statusObj.style.color = "orange";
-//   } else if (type === "load") {
-//       statusObj.innerHTML = " (Loading ID " + REACHID + ")";
-//       statusObj.style.color = "orange";
-//   } else if (type === "ready") {
-//       statusObj.innerHTML = " (Ready)";
-//       statusObj.style.color = "green";
-//   } else if (type === "fail") {
-//       statusObj.innerHTML = " (Failed)";
-//       statusObj.style.color = "red";
-//   } else if (type === "cleared") {
-//       statusObj.innerHTML = " (Cleared)";
-//       statusObj.style.color = "grey";
-//   }
-// }
 
 
 //styling functions
@@ -151,7 +131,7 @@ async function renderLocations() {
 }
 
 async function retrieveHistoricalValues(reachid) {
-  document.getElementById('historical-loading').style.display = "flex";
+  loading_element.style.display = "flex";
   document.getElementById('stats-historical-table').innerHTML = ""
   const overlay = document.getElementById("overlay");
   let chartHolder = document.getElementById("retrieved-historical-data");
@@ -192,7 +172,7 @@ async function retrieveHistoricalValues(reachid) {
     hydro.data.download({ args: { type: "CSV" }, data: geoglows_data_transformed });
   });
   isHistoricalLoaded = true
-  document.getElementById('historical-loading').style.display = "none";
+  loading_element.style.display = "none";
 
   // // dialy averages
   // const overlay_daily_avg = document.getElementById("overlay");
@@ -228,7 +208,7 @@ async function retrieveHistoricalValues(reachid) {
 retrieveForecastValues: retrieves forecast data
 */
 async function retrieveForecastValues(reachid) {
-   document.getElementById('forecast-loading').style.display = "flex";
+  loading_element.style.display = "flex";
 
     const overlay = document.getElementById("overlay");
     let chartHolder = document.getElementById("retrieved-forecast-data");
@@ -276,7 +256,7 @@ async function retrieveForecastValues(reachid) {
     });
     showOverlay();
     isForecastLoaded =  true;
-    document.getElementById('forecast-loading').style.display = "none";
+    loading_element.style.display = "none";
   }
 
   
