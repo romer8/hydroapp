@@ -40,7 +40,7 @@
     animation: fadeEffect 1s;
     width: 100%;
     min-height: 300px;
-
+    flex-direction: column;
   }
   
   /* Fade in tabs */
@@ -120,8 +120,6 @@
   }
 }
 
-
-
 .spinner-box {
   display: none;
   z-index: 10000;
@@ -139,15 +137,15 @@
 /* PULSE BUBBLES */
 
 .pulse-container {
-  width: 120px;
+  width: 300px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .pulse-bubble {
-  width: 20px;
-  height: 20px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background-color: #08FF08;
 }

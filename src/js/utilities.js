@@ -1,30 +1,4 @@
-// helper functions
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-  
-    if (!isHistoricalLoaded){
-        retrieveHistoricalValues(REACHID);
-    }
-  
-    if (!isForecastLoaded){
-      retrieveForecastValues(REACHID);
-    }
-  
-    // if (!isDailyAverageLoaded){
-    //   retrieveDailyAveragesValues(currentStationLocation);
-    // }  
-  }
-  
+
   
   //styling functions
   
@@ -38,3 +12,18 @@ function openTab(evt, tabName) {
     }
   }
   
+
+
+  // const startDate = new Date();
+// var yyyy = startDate.getFullYear();
+// var mm = startDate.getMonth() + 1; // getMonth() is zero-based
+// var dd = startDate.getDate();
+// let startDateString = String(10000 * yyyy + 100 * mm + dd); // Leading zeros for mm and dd
+
+// const endDate = new Date()
+
+// endDate.setDate(endDate.getDate() + 10)
+// var yyyy = endDate.getFullYear();
+// var mm = endDate.getMonth() + 1; // getMonth() is zero-based
+// var dd = endDate.getDate();
+// let endDateString = String(10000 * yyyy + 100 * mm + dd); // Leading zeros for mm and dd
