@@ -2,6 +2,11 @@ const hydro = new Hydrolang();
 const compute= new hydroCompute();
 
 
+//Map
+let mapMarker = null;
+let REACHID;
+let SelectedSegment;
+
 let isHistoricalLoaded = false;
 let isForecastLoaded = false;
 let isDailyAverageLoaded = false;
@@ -10,7 +15,7 @@ let currentStationLocation = {};
 window.clean_stations = [];
 
 
-// helper function
+// helper functions
 function openTab(evt, tabName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
@@ -36,6 +41,29 @@ function openTab(evt, tabName) {
   //   retrieveDailyAveragesValues(currentStationLocation);
   // }  
 }
+
+//////////////////////////////////////////////////////////////////////// UPDATE STATUS ICONS FUNCTION
+// function updateStatusIcons(type) {
+//   const statusObj = document.getElementById("request-status");
+
+//   if (type === "identify") {
+//       statusObj.innerHTML = " (Getting Stream ID)";
+//       statusObj.style.color = "orange";
+//   } else if (type === "load") {
+//       statusObj.innerHTML = " (Loading ID " + REACHID + ")";
+//       statusObj.style.color = "orange";
+//   } else if (type === "ready") {
+//       statusObj.innerHTML = " (Ready)";
+//       statusObj.style.color = "green";
+//   } else if (type === "fail") {
+//       statusObj.innerHTML = " (Failed)";
+//       statusObj.style.color = "red";
+//   } else if (type === "cleared") {
+//       statusObj.innerHTML = " (Cleared)";
+//       statusObj.style.color = "grey";
+//   }
+// }
+
 
 //styling functions
 
@@ -91,10 +119,8 @@ async function renderLocations() {
         isForecastLoaded = false
         document.getElementById('forecast-tab-content').style.display = "block";
         document.getElementById('historical-tab-content').style.display = "none";
-        document.getElementById('historical-tab-content').className.replace(" active", "")
-        document.getElementById('forecast-tab-content').className += " active";
-        // document.getElementById('historical-tab-content').className.replace(" active", "")
-        // openTab(evt, 'forecast-tab-content')
+        document.getElementById('historical-tab-id').className = "tablink"
+        document.getElementById('forecast-tab-id').className += " active";
         retrieveForecastValues(currentStationLocation);
     });
     const popUpContent = document.createElement("div");
@@ -124,9 +150,9 @@ async function renderLocations() {
   }
 }
 
-async function retrieveHistoricalValues(location) {
+async function retrieveHistoricalValues(reachid) {
   document.getElementById('historical-loading').style.display = "flex";
-
+  document.getElementById('stats-historical-table').innerHTML = ""
   const overlay = document.getElementById("overlay");
   let chartHolder = document.getElementById("retrieved-historical-data");
   chartHolder.innerHTML = "";
@@ -138,9 +164,9 @@ async function retrieveHistoricalValues(location) {
     transform: true
   };
   let args_query = {
-    // reach_id: 9041547,
-    lat: location.latitude,
-    lon: location.longitude,
+    reach_id: reachid,
+    // lat: location.latitude,
+    // lon: location.longitude,
     return_format: "json",
   };
   let geoglows_data_historical = await hydro.data.retrieve({
@@ -201,7 +227,7 @@ async function retrieveHistoricalValues(location) {
 /*
 retrieveForecastValues: retrieves forecast data
 */
-async function retrieveForecastValues(location) {
+async function retrieveForecastValues(reachid) {
    document.getElementById('forecast-loading').style.display = "flex";
 
     const overlay = document.getElementById("overlay");
@@ -217,9 +243,9 @@ async function retrieveForecastValues(location) {
     };
 
     let args_query_forecast_records = {
-    //   reach_id: 9041547,
-      lat: location.latitude,
-      lon: location.longitude,
+      reach_id: reachid,
+      // lat: location.latitude,
+      // lon: location.longitude,
       // start_date: startDateString,
       // end_date: endDateString,
       return_format: "json",
@@ -321,13 +347,86 @@ async function computeDailyAveragesRun(location, data) {
 
 // }
 
+async function render_map_and_layers(){
+  
+  let layerAnimationTime = new Date();
+  layerAnimationTime = new Date(layerAnimationTime.toISOString())
+  layerAnimationTime.setUTCHours(0)
+  layerAnimationTime.setUTCMinutes(0)
+  layerAnimationTime.setUTCSeconds(0)
+  layerAnimationTime.setUTCMilliseconds(0)
+  const startDateTime = new Date(layerAnimationTime)
+  const endDateTime = new Date(layerAnimationTime.setUTCHours(5 * 24))
+  layerAnimationTime = new Date(startDateTime)
+  const mapObj = L.map("map", {
+    zoom: 3,
+    minZoom: 2,
+    boxZoom: true,
+    maxBounds: L.latLngBounds(L.latLng(-100, -225), L.latLng(100, 225)),
+    center: [20, 0]
+  })
+  L.esri.basemapLayer("Topographic").addTo(mapObj)
+  let SelectedSegment = L.geoJSON(false, { weight: 5, color: "#00008b" }).addTo(mapObj)
 
+  const globalLayer = L.esri
+    .dynamicMapLayer({
+        url:
+            "https://livefeeds2.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer",
+        useCors: false,
+        layers: [0],
+        from: startDateTime,
+        to: endDateTime
+    })
+    .addTo(mapObj)
+
+    mapObj.on("click", function(event) {
+      if (mapObj.getZoom() <= 9.5) {
+          mapObj.flyTo(event.latlng, 10);
+          return
+      } else {
+          mapObj.flyTo(event.latlng)
+      }
+      if (mapMarker) {
+          mapObj.removeLayer(mapMarker)
+      }
+      mapMarker = L.marker(event.latlng).addTo(mapObj)
+      // updateStatusIcons("identify")
+      // $("#chart_modal").modal("show")
+  
+      L.esri
+          .identifyFeatures({url: "https://livefeeds2.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"})
+          .on(mapObj)
+          // querying point with tolerance
+          .at([event.latlng["lat"], event.latlng["lng"]])
+          .tolerance(10) // map pixels to buffer search point
+          .precision(3) // decimals in the returned coordinate pairs
+          // .returnGeometry(false)  // include geojson geometry
+          .run(function(error, featureCollection) {
+              if (error) {
+                  updateStatusIcons("fail")
+                  alert("Error finding the reach_id")
+                  return
+              }
+              SelectedSegment.clearLayers()
+              SelectedSegment.addData(featureCollection.features[0].geometry)
+              REACHID = featureCollection.features[0].properties["COMID (Stream Identifier)"]
+              isHistoricalLoaded = false
+              isForecastLoaded = false
+              document.getElementById('forecast-tab-content').style.display = "block";
+              document.getElementById('historical-tab-content').style.display = "none";
+              document.getElementById('historical-tab-id').className = "tablink"
+              document.getElementById('forecast-tab-id').className += " active";
+              retrieveForecastValues(REACHID);
+          })
+  })
+}
 
 async function main() {
-  hydro.map.renderMap({
-    params: { maptype: "leaflet", lat: 40.75, lon: -111.87 }
-  });
-  renderLocations();
+  render_map_and_layers();
+  // hydro.map.renderMap({
+  //   params: { maptype: "leaflet", lat: 40.75, lon: -111.87 }
+  // });
+  // renderLocations();
   const tab_forecast = document.getElementById("forecast-tab-id");
     tab_forecast.addEventListener("click", function (evt) {
       openTab(evt, 'forecast-tab-content')

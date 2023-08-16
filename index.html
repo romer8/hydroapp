@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet@2.2.3/dist/esri-leaflet.js"></script>
     <script type="module" src="./hydrolang/hydro.js"></script>
     <script type="module" src="./hydrocompute/hydrocompute.js"></script>
+    <script type="module" src="./src/extensionWMFS.js"></script>
+
     <link rel="stylesheet" href="src/tabs.css" />
     <link rel="stylesheet" href="src/styles.css" />
     <title>Geoglows case study</title>
@@ -19,28 +26,27 @@
           </div>
           
           <div id="forecast-tab-content" class="tabcontent">
-            <div id="forecast-loading" class="spinner-box">
-                <div class="configure-border-1">  
-                  <div class="configure-core"></div>
-                </div>  
-                <div class="configure-border-2">
-                  <div class="configure-core"></div>
-                </div> 
+             <div id="forecast-loading" class="spinner-box">
+                <div class="pulse-container">  
+                  <div class="pulse-bubble pulse-bubble-1"></div>
+                  <div class="pulse-bubble pulse-bubble-2"></div>
+                  <div class="pulse-bubble pulse-bubble-3"></div>
+                </div>
               </div>
+              
               <div id="retrieved-forecast-data"></div>
               <div id="stats-forecast-table"></div>
               <button id="download-forecast-btn">Download Data</button>
           </div>
           
           <div id="historical-tab-content" class="tabcontent">
-                <div id="historical-loading" class="spinner-box">
-                    <div class="configure-border-1">  
-                    <div class="configure-core"></div>
-                    </div>  
-                    <div class="configure-border-2">
-                    <div class="configure-core"></div>
-                    </div> 
+            <div id="historical-loading" class="spinner-box">
+                <div class="pulse-container">  
+                  <div class="pulse-bubble pulse-bubble-1"></div>
+                  <div class="pulse-bubble pulse-bubble-2"></div>
+                  <div class="pulse-bubble pulse-bubble-3"></div>
                 </div>
+              </div>
               <div id="retrieved-historical-data"></div>
               <div id="stats-historical-table"></div>
               <button id="download-historical-btn">Download Data</button>
