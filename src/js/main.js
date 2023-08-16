@@ -9,7 +9,7 @@ let loading_element = document.getElementById('loading-container')
 let mapMarker = null;
 let REACHID;
 let SelectedSegment;
-
+const ESRI_API_KEY='AAPK052bec1846714415aed2c85ddfa15f73KYexWiKoe0Au2nFQprFm_CWnafrYs4Y3MwTI3iqb-QBEwR808TRyXrudF4Za40V-';
 let isHistoricalLoaded = false;
 let isForecastLoaded = false;
 let isDailyAverageLoaded = false;
@@ -17,45 +17,6 @@ let isDailyAverageLoaded = false;
 window.clean_stations = [];
 
 
-// helper functions
-function openTab(evt, tabName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
-
-  if (!isHistoricalLoaded){
-      retrieveHistoricalValues(REACHID);
-  }
-
-  if (!isForecastLoaded){
-    retrieveForecastValues(REACHID);
-  }
-
-  // if (!isDailyAverageLoaded){
-  //   retrieveDailyAveragesValues(currentStationLocation);
-  // }  
-}
-
-
-//styling functions
-
-function showOverlay() {
-  overlay.style.display = "block";
-}
-
-function hideOverlay(event) {
-  if (event.target.id === "overlay") {
-    overlay.style.display = "none";
-  }
-}
 
 window.addEventListener("click", hideOverlay);
 
@@ -208,7 +169,7 @@ async function retrieveHistoricalValues(reachid) {
 retrieveForecastValues: retrieves forecast data
 */
 async function retrieveForecastValues(reachid) {
-  loading_element.style.display = "flex";
+    loading_element.style.display = "flex";
 
     const overlay = document.getElementById("overlay");
     let chartHolder = document.getElementById("retrieved-forecast-data");
@@ -345,7 +306,10 @@ async function render_map_and_layers(){
     maxBounds: L.latLngBounds(L.latLng(-100, -225), L.latLng(100, 225)),
     center: [20, 0]
   })
-  L.esri.basemapLayer("Topographic").addTo(mapObj)
+  L.esri.Vector.vectorBasemapLayer("ArcGIS:Topographic", {
+    apikey: ESRI_API_KEY
+  }).addTo(mapObj);
+  // L.esri.basemapLayer("Topographic").addTo(mapObj)
   let SelectedSegment = L.geoJSON(false, { weight: 5, color: "#00008b" }).addTo(mapObj)
 
   const globalLayer = L.esri
